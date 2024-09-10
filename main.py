@@ -50,7 +50,9 @@ class InstructionContainer:
 
 @strawberry.type
 class Collection:
-    pass
+    name:str
+    recipe_list:list[RecipeType]
+
 
 
 
@@ -112,13 +114,46 @@ class User:
     collection_library: list[Collection]
     bookmark_library: list[Recipe]
 
+#Query Section
 
-def get_recipe() -> Recipe | None:
+
+def get_recipe(self,r_id:str) -> Recipe | None:
     with get_mgraph_connection() as mg_connection:
         with mg_connection.cursor() as cursor:
             result = cursor.execute(
-                """"""
-            )
+                f"""MATCH (r:Recipe {{id: {r_id}}})-[:HAS]->(ic:IngredientContainer)-[:HAS]->(bi:BasicIngredient),
+                    (r)-[:HAS]->(incon:InstructionContainer)-[:HAS]->(in:Instructions)
+                     WITH
+                        r
+                        COLLECT(
+                        {{
+                            name: ic.name,
+                            COLLECT({{
+                                bid: bi.bi_id,
+                                name: bi.name,
+                                bkey: bi.key,
+                                amount: bi.amount
+                            }}) AS baseingredients
+                        }}) AS ingredients,
+                        COLLECT({{
+                            name: incon.name,
+                            COLLECT({{
+                                orderno: in.orderno
+                                body: in.step
+                            }}) AS steps
+                        }}) AS instructions
+                     RETURN {{
+                        name: r.name,
+                        rid: r.r_id,
+                        description: r.description,
+                        is_visible: r.is_visible,
+                        image_url: r.image_url,
+                        ingredients: ingredients,
+                        instructions: instructions
+                     }} """
+            ).fetchall()
+            if result:
+                pass
     return Recipe()
 
 def get_recipe_from_tuple(recipe_tuple:[tuple])-> [Recipe,int]:
@@ -131,8 +166,7 @@ def get_recipe_from_tuple(recipe_tuple:[tuple])-> [Recipe,int]:
 
 
 
-def help_get_recipes(cursor):
-    results = cursor.execute()
+
 
 def get_user(self, u_id:str)-> User | None:
     with get_mgraph_connection() as mg_connection:
@@ -161,28 +195,33 @@ def get_user_library(self, u_id:str)-> list[RPreview]:
                 return library
             else: return []
 
+#Mutation Input Section
+
+
+#Mutation Section
 
 def add_user(self, u_id:str, )-> [str]:
     return ['404','']
 
-def add_recipe(self, u_id, )-> [str]:
+def add_recipe(self, u_id:str, )-> [str]:
     return ['404','']
 
 @strawberry.type
 class Query:
-
+    #Basic Lookup
     user: User = strawberry.field(resolver=get_user)
     """Use user to get a light wieght version of the user object, the version only has the id, name and profile"""
-    library: list[Recipe] = strawberry.field(resolver=get_user_library)
+    library: list[RPreview] = strawberry.field(resolver=get_user_library)
     recipe: Recipe = strawberry.field(resolver=get_recipe)
-    recipes: list[Recipe] = strawberry.field()
+    #Advance Searches and Metadata lookup
 
 @strawberry.type
 class Mutation:
-
+    #Basic Create
     add_user: User = strawberry.mutation(resolver=add_user)
     new_recipe: Recipe = strawberry.mutation(resolver=add_recipe)
 
+    #Update
 
 
 
