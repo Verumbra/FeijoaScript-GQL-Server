@@ -5,6 +5,8 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="7e0343e4-4919-4480-992e-f4d1c0321ef2" name="Changes" comment="">
+      <change afterPath="$PROJECT_DIR$/ID Gen/__init__.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/ID Gen/id_gen.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/main.py" beforeDir="false" afterPath="$PROJECT_DIR$/main.py" afterDir="false" />
     </list>
@@ -18,6 +20,7 @@
       <list>
         <option value="FastAPI main" />
         <option value="FastAPI test_main" />
+        <option value="Python Script" />
       </list>
     </option>
   </component>
@@ -81,7 +84,7 @@
       <option name="presentableId" value="Default" />
       <updated>1725806322150</updated>
       <workItem from="1725806324196" duration="7192000" />
-      <workItem from="1725848706617" duration="42781000" />
+      <workItem from="1725848706617" duration="72172000" />
     </task>
     <servers />
   </component>

@@ -26,8 +26,9 @@ class RecipeType:
 
 @strawberry.type
 class BasicIngredient:
+    ing_key: str
     name: str
-    bi_id: str
+    b_key: str
     """id should be encode with the custom format: [bi code part].[user/recipe code part].[time stamp derived part]"""
     amount: str #todo need to find a better way to store and send this data: tuple(int part and str part) or can be just str or int
 
@@ -120,7 +121,7 @@ class User:
 def get_recipe(self,r_id:str) -> Recipe | None:
     with get_mgraph_connection() as mg_connection:
         with mg_connection.cursor() as cursor:
-            result = cursor.execute(
+            results = cursor.execute(
                 f"""MATCH (r:Recipe {{id: {r_id}}})-[:HAS]->(ic:IngredientContainer)-[:HAS]->(bi:BasicIngredient),
                     (r)-[:HAS]->(incon:InstructionContainer)-[:HAS]->(in:Instructions)
                      WITH
@@ -130,6 +131,7 @@ def get_recipe(self,r_id:str) -> Recipe | None:
                             name: ic.name,
                             COLLECT({{
                                 bid: bi.bi_id,
+                                ingkey: bi.ing_id,
                                 name: bi.name,
                                 bkey: bi.key,
                                 amount: bi.amount
@@ -152,17 +154,39 @@ def get_recipe(self,r_id:str) -> Recipe | None:
                         instructions: instructions
                      }} """
             ).fetchall()
-            if result:
-                pass
-    return Recipe()
-
-def get_recipe_from_tuple(recipe_tuple:[tuple])-> [Recipe,int]:
-    recipe:Recipe = Recipe(name=recipe_tuple[0],r_id=recipe_tuple[1],description=recipe_tuple[2],is_visible=recipe_tuple[3],is_owner_match=recipe_tuple[4])
-    ing_con_list:list[IngredientContainer]
-    ing_con_builder:IngredientContainer
-    #some logic that extracts
-
-
+            if results:
+                recipe: Recipe(
+                    name=results[0]['name'],
+                    r_id=results[0]['r_id'],
+                    description=results[0]['description'],
+                    is_visible=results[0]['is_visible'],
+                    image_url=results[0]['image_url'],
+                )
+                for r in results[0]['ingredients']:
+                    temp: IngredientContainer = IngredientContainer(
+                        name=r['name']
+                    )
+                    for b in r['baseingredients']:
+                        b_ing: BasicIngredient = BasicIngredient(
+                            name=b['name'],
+                            ing_key=b['ingkey'],
+                            b_key = b['bkey'],
+                            amount = b['amount'],
+                        )
+                        temp.ig_list.append(b_ing)
+                    recipe.ingredient_list.append(temp)
+                for s in results[0]['instructions']:
+                    temp: InstructionContainer = InstructionContainer(
+                        name=s['name'],
+                    )
+                    for st in s['steps']:
+                        step: Instructions = Instructions(
+                            order_No=st['orderno'],
+                            body=st['body'],
+                        )
+                        temp.step_list.append(step)
+                    recipe.instructions.append(temp)
+                return recipe
 
 
 
@@ -201,10 +225,22 @@ def get_user_library(self, u_id:str)-> list[RPreview]:
 #Mutation Section
 
 def add_user(self, u_id:str, )-> [str]:
+    with get_mgraph_connection() as mg_connection:
+        with mg_connection.cursor() as cursor:
+            u_id: str = u_id
     return ['404','']
 
 def add_recipe(self, u_id:str, )-> [str]:
+    with get_mgraph_connection() as mg_connection:
+        with mg_connection.cursor() as cursor:
     return ['404','']
+
+def set_ingredients(self, u_id:str, ingredient_list:list[BasicIngredient]) -> [str]:
+    with get_mgraph_connection() as mg_connection:
+        with mg_connection.cursor() as cursor:
+    pass
+
+
 
 @strawberry.type
 class Query:
