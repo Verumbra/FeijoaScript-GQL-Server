@@ -41,3 +41,42 @@ create table collection (
 
 );
 
+
+CREATE TABLE Instruction_List (
+    Recipe_ref_number INT NOT NULL,
+    id Serial PRIMARY KEY,
+    name varchar(200),
+    FOREIGN KEY (Recipe_ref_number) REFERENCES recipe(id)
+        ON DELETE CASCADE
+        ON UPDATE CASCADE
+);
+
+CREATE TABLE Step_List (
+    Inst_Ref_ID INT NOT NULL,
+    name varchar(200),
+    step_index INT NOT NULL,
+    step_body TEXT NOT NULL,
+    FOREIGN KEY (Inst_Ref_ID) REFERENCES Instruction_List(id)
+        ON DELETE CASCADE
+        ON UPDATE CASCADE
+);
+
+CREATE TABLE Ingredient_List (
+    Recipe_Ref_Number INT NOT NULL,
+    id Serial PRIMARY KEY,
+    name varchar(200),
+    FOREIGN KEY (Recipe_Ref_Number) REFERENCES Recipe(id)
+        ON DELETE CASCADE
+        ON UPDATE CASCADE
+);
+
+CREATE TABLE Ingredient (
+    Ing_List_Ref_Number INT NOT NULL,
+    id Serial PRIMARY KEY,
+    name varchar(200),
+    amount varchar,
+    ing_id INT,
+    FOREIGN KEY (Ing_List_Ref_Number) REFERENCES Ingredient_List(id)
+        ON DELETE CASCADE
+        ON UPDATE CASCADE
+);
