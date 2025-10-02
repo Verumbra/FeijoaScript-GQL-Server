@@ -8,10 +8,7 @@ CREATE FUNCTION update_recipe_timestamps()
     END;
     $$ language 'plpgsql';
 
-CREATE TRIGGER update_recipe_timestamps
-    BEFORE UPDATE ON recipe
-    FOR EACH ROW
-    EXECUTE FUNCTION update_recipe_timestamps();
+
 
 create table app_user (
     id SERIAL PRIMARY KEY,
@@ -37,9 +34,6 @@ create table recipe (
 
 
 
-create table collection (
-
-);
 
 
 CREATE TABLE Instruction_List (
@@ -80,3 +74,9 @@ CREATE TABLE Ingredient (
         ON DELETE CASCADE
         ON UPDATE CASCADE
 );
+
+
+CREATE TRIGGER update_recipe_timestamps
+    BEFORE UPDATE ON recipe
+    FOR EACH ROW
+    EXECUTE FUNCTION update_recipe_timestamps();
