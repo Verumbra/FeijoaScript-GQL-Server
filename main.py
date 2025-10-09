@@ -12,7 +12,7 @@ import psycopg
 from dotenv import load_dotenv
 import os
 
-import Utilty.Synth
+#import Utilty.Synth
 import Models.OutputTypes
 import Models.InputType
 

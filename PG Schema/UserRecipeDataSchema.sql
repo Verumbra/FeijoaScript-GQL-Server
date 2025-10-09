@@ -1,23 +1,18 @@
 create schema if not exists UserRecipeData;
 
-CREATE FUNCTION update_recipe_timestamps()
-    RETURNS TRIGGER as $$
-    BEGIN
-        NEW.update_at = NOW();
-        RETURN NEW;
-    END;
-    $$ language 'plpgsql';
 
 
 
-create table app_user (
-    id SERIAL PRIMARY KEY,
-    name varchar(200),
-    profile TEXT,
+
+create table if not exists app_user
+(
+    id         SERIAL PRIMARY KEY,
+    name       varchar(200),
+    profile    TEXT,
     created_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT NOW(),
-    update_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT NOW(),
-
+    update_at  TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT NOW()
 );
+
 
 create table recipe (
     id SERIAL PRIMARY KEY,
@@ -74,6 +69,14 @@ CREATE TABLE Ingredient (
         ON DELETE CASCADE
         ON UPDATE CASCADE
 );
+
+CREATE FUNCTION update_recipe_timestamps()
+    RETURNS TRIGGER as $$
+    BEGIN
+        NEW.update_at = NOW();
+        RETURN NEW;
+    END;
+    $$ language 'plpgsql';
 
 
 CREATE TRIGGER update_recipe_timestamps
